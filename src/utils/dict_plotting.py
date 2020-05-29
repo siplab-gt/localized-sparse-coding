@@ -5,9 +5,9 @@ Plotting utility functions for learned sparse dictionary.
 @Author      Kion 
 @Created     5/29/20
 """
+import matplotlib.animation as animation
 import numpy as np
 from matplotlib import pyplot as plt
-import matplotlib.animation as animation
 
 
 def show_dict(phi):
@@ -22,7 +22,7 @@ def show_dict(phi):
         plt.subplot(int(np.sqrt(num_dictionaries)), int(np.sqrt(num_dictionaries)), i + 1)
         dict_element = phi[:, i].reshape(patch_size, patch_size)
         plt.imshow(dict_element, cmap='gray')
-    plt.setp(plt.gcf().get_axes(), xticks=[], yticks=[]);
+    plt.setp(plt.gcf().get_axes(), xticks=[], yticks=[])
 
 
 def show_phi_vid(phi_list):
@@ -51,7 +51,7 @@ def show_phi_vid(phi_list):
             im = ax_list[p].imshow(dict_element, cmap='gray', animated=True)
             phi_im.append(im)
         ims.append(phi_im)
-    plt.setp(plt.gcf().get_axes(), xticks=[], yticks=[]);
-    ani = animation.ArtistAnimation(fig, ims, interval=300, blit=True, repeat_delay=2000)
+    plt.setp(plt.gcf().get_axes(), xticks=[], yticks=[])
+    ani = animation.ArtistAnimation(fig, ims, interval=200, blit=True, repeat_delay=2000)
     plt.close()
     return ani
