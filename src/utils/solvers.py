@@ -35,15 +35,22 @@ def FISTA(A, y, tau=1e-2, max_iter=500, tol=1e-3):
     t = 1
     change = 1e99
 
+    # Check exit condition
     while k < max_iter and change > tol:
+        # Save copy of current iteration for calculating change
         old_x = np.array(x)
 
+        # Take gradient step to minimize L2 term
         x = z - (1 / L) * A.T @ (A @ z - y)
+        # Take proximal gradient step to minimize L1 term
         x = soft_thresh(x, (tau / L))
 
+        # Compute new momentum weighting term
         new_t = (1 + np.sqrt(1 + 4 * t ** 2)) / 2
+        # Compute momentum as weighted sum of current and past iteration
         z = x + ((t - 1) / new_t) * (x - old_x)
 
+        # Increment iteration, calculate change for exit criterion
         k += 1
         t = new_t
         change = np.linalg.norm(x - old_x) / np.linalg.norm(old_x)
