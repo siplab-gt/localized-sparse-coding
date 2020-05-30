@@ -103,9 +103,7 @@ if __name__ == "__main__":
     train_time = np.zeros(num_epochs)
 
     # TRAIN MODEL #
-
     init_time = time.time()
-
     for j in range(num_epochs):
         epoch_loss = np.zeros(train_patches.shape[0] // batch_size)
         # Shuffle training data-set
