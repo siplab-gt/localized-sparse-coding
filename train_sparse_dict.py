@@ -10,13 +10,13 @@ import argparse
 import time
 
 import numpy as np
-import scipy
-# PARSE COMMAND LINE ARGUMENTS #
+import scipy.io
 from sklearn.feature_extraction.image import extract_patches_2d
 
 from utils.solvers import FISTA, ADMM
 from utils.sparse_mat import bd_matrix, dbd_matrix
 
+# PARSE COMMAND LINE ARGUMENTS #
 parser = argparse.ArgumentParser(description='Run sparse dictionary learning with compressed images.')
 parser.add_argument('-S', '--solver', default='FISTA', choices=['FISTA', 'ADMM'],
                     help="Solver used to find sparse coefficients")
@@ -27,16 +27,16 @@ parser.add_argument('-R', '--l1_penalty', default=2e-1, type=float, help="L1 reg
 parser.add_argument('-e', '--num_epochs', default=50, type=int, help="Number of epochs")
 parser.add_argument('-T', '--train_samples', default=40000, type=int, help="Number of training samples to use")
 parser.add_argument('-V', '--val_samples', default=10000, type=int, help="Number of validation samples to use")
-parser.add_argument('-C', '--corr_samples', default=1280, type=int,
+parser.add_argument('-C', '--corr_samples', default=5000, type=int,
                     help="Number of correlation samples to use to recover dictionaries")
 parser.add_argument('-c', '--compression', required=True, choices=['none', 'dbd', 'bd'],
                     help="Type of compression to use. None for regular sparse dictionary, dbd for distinct block "
                          "diagonal, bd for banded diagonal.")
-parser.add_argument('-j', '--localization', required=True,
-                    help="Degree of localization for compression. J=1 is not localization.")
-parser.add_argument('-r', '--compression_ratio', default=.5, type=float, help="Ratio of compression")
+parser.add_argument('-j', '--localization', required=True, type=int,
+                    help="Degree of localization for compression. J=1 has no localization.")
+parser.add_argument('-r', '--compression_ratio', default=.7, type=float, help="Ratio of compression")
 parser.add_argument('-l', '--learning_rate', default=1, type=float, help="Default initial learning rate")
-parser.add_argument('-d', '--decay', default=.995, type=float, help="Default multiplicative learning rate decay")
+parser.add_argument('-d', '--decay', default=.985, type=float, help="Default multiplicative learning rate decay")
 
 # PARSE ARGUMENTS #
 args = parser.parse_args()
@@ -55,24 +55,27 @@ J = args.localization
 M_tilde = (patch_size ** 2) * args.compression_ratio
 compression = args.compression
 
-save_suffix = time.strftime("%m-%d-%Y") + "_" + compression
+save_suffix = time.strftime("%m-%d-%Y") + "_" + compression + "_J" + str(J)
 
 if __name__ == "__main__":
     # LOAD DATA #
     data_matlab = scipy.io.loadmat('./data/whitened_images.mat')
     images = np.ascontiguousarray(data_matlab['IMAGES'])
 
-    # Extract patches using SciKit-Learn. Out of 10 images, 8 are used for training and 2 are used for validation
+    # Extract patches using SciKit-Learn. Out of 10 images, 8 are used for training and 2 are used for validation.
     data_patches = np.moveaxis(extract_patches_2d(images[:, :, :-2], (patch_size, patch_size)), -1, 1). \
         reshape(-1, patch_size, patch_size)
     val_patches = extract_patches_2d(images[:, :, -2], (patch_size, patch_size))
 
-    # Designate patches to use for training, validation, and correlation (only for compressed dictionaries)
+    # Designate patches to use for training, validation, and correlation (only for compressed dictionaries). This
+    # step will also normalize the data.
     val_patches = val_patches[np.linspace(1, val_patches.shape[0] - 1, val_samples, dtype=int), :, :]
+    val_patches = val_patches / np.linalg.norm(val_patches.reshape(-1, patch_size ** 2), axis=1)[:, None, None]
     print("Shape of validation dataset: {}".format(val_patches.shape))
 
     train_idx = np.linspace(1, data_patches.shape[0] - 1, train_samples, dtype=int)
     train_patches = data_patches[train_idx, :, :]
+    train_patches = train_patches / np.linalg.norm(train_patches.reshape(-1, patch_size ** 2), axis=1)[:, None, None]
     print("Shape of training dataset: {}".format(train_patches.shape))
 
     if compression != 'none':
@@ -81,6 +84,7 @@ if __name__ == "__main__":
         unused_data = data_patches[mask]
         corr_idx = np.linspace(1, unused_data.shape[0] - 1, corr_samples, dtype=int)
         corr_patches = unused_data[corr_idx, :, :]
+        corr_patches = corr_patches / np.linalg.norm(corr_patches.reshape(-1, patch_size ** 2), axis=1)[:, None, None]
         print("Shape of correlation dataset: {}".format(corr_patches.shape))
 
     # INITIALIZE TRAINING PARAMETERS #
@@ -111,13 +115,13 @@ if __name__ == "__main__":
         for i in range(train_patches.shape[0] // batch_size):
             patches = train_patches[i * batch_size:(i + 1) * batch_size].reshape(batch_size, -1).T
 
-            # Create single variable that can be used irrespective of compression matrix
+            # Create single variable that can be used irrespective of compression matrix.
             if compression == 'none':
                 infer_dictionary = dictionary
                 infer_patches = patches
             else:
                 infer_dictionary = compressed_dictionary
-                infer_patches = compressed_dictionary @ patches
+                infer_patches = compression_matrix @ patches
 
             # Infer coefficients
             if solver == "FISTA":
