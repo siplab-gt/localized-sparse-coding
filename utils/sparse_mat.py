@@ -34,9 +34,9 @@ def bd_matrix(bands, M, N):
     """
     comp_block_diag = np.random.randn(M, N) * (1 / np.sqrt(M))
     diag_band = np.zeros_like(comp_block_diag)
-    for j in range(int(bands / 2), int(bands / 2)):
+    for j in range(- int(bands / 2), int(bands + 1 / 2)):
         for i in range(M):
-            if i + j < 0:
+            if i + j >= N:
                 continue
             diag_band[i, i + j] = 1
     return diag_band * comp_block_diag

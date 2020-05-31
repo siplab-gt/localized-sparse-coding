@@ -3,7 +3,7 @@ Train sparse dictionary model (Olshausen 1997) with whitened images used in the 
 the option to train with specific compression matrices.
 
 @Filename    train_sparse_dict
-@Author      Kion 
+@Author      Kion
 @Created     5/29/20
 """
 import argparse
@@ -23,19 +23,19 @@ parser.add_argument('-S', '--solver', default='FISTA', choices=['FISTA', 'ADMM']
 parser.add_argument('-b', '--batch_size', default=100, type=int, help="Batch size")
 parser.add_argument('-N', '--dict_count', default=256, type=int, help="Dictionary count")
 parser.add_argument('-p', '--patch_size', default=16, type=int, help="Patch size")
-parser.add_argument('-R', '--l1_penalty', default=2e-1, type=float, help="L1 regularizer constant")
-parser.add_argument('-e', '--num_epochs', default=50, type=int, help="Number of epochs")
-parser.add_argument('-T', '--train_samples', default=40000, type=int, help="Number of training samples to use")
-parser.add_argument('-V', '--val_samples', default=10000, type=int, help="Number of validation samples to use")
-parser.add_argument('-C', '--corr_samples', default=5000, type=int,
+parser.add_argument('-R', '--l1_penalty', default=1e-1, type=float, help="L1 regularizer constant")
+parser.add_argument('-e', '--num_epochs', default=100, type=int, help="Number of epochs")
+parser.add_argument('-T', '--train_samples', default=48000, type=int, help="Number of training samples to use")
+parser.add_argument('-V', '--val_samples', default=12000, type=int, help="Number of validation samples to use")
+parser.add_argument('-C', '--corr_samples', default=6000, type=int,
                     help="Number of correlation samples to use to recover dictionaries")
 parser.add_argument('-c', '--compression', required=True, choices=['none', 'dbd', 'bd'],
                     help="Type of compression to use. None for regular sparse dictionary, dbd for distinct block "
                          "diagonal, bd for banded diagonal.")
 parser.add_argument('-j', '--localization', required=True, type=int,
                     help="Degree of localization for compression. J=1 has no localization.")
-parser.add_argument('-r', '--compression_ratio', default=.7, type=float, help="Ratio of compression")
-parser.add_argument('-l', '--learning_rate', default=1, type=float, help="Default initial learning rate")
+parser.add_argument('-r', '--compression_ratio', default=.5, type=float, help="Ratio of compression")
+parser.add_argument('-l', '--learning_rate', default=.8, type=float, help="Default initial learning rate")
 parser.add_argument('-d', '--decay', default=.985, type=float, help="Default multiplicative learning rate decay")
 
 # PARSE ARGUMENTS #
@@ -52,7 +52,7 @@ corr_samples = args.corr_samples
 learning_rate = args.learning_rate
 decay = args.decay
 J = args.localization
-M_tilde = (patch_size ** 2) * args.compression_ratio
+M_tilde = int((patch_size ** 2) * args.compression_ratio)
 compression = args.compression
 
 save_suffix = time.strftime("%m-%d-%Y") + "_" + compression + "_J" + str(J)
@@ -95,10 +95,10 @@ if __name__ == "__main__":
     # Create compression matrices and compress the dictionary
     if compression == 'dbd':
         compression_matrix = dbd_matrix(J, M_tilde, patch_size ** 2)
-        compressed_dictionary = comp_phi = compression_matrix @ dictionary
+        compressed_dictionary = compression_matrix @ dictionary
     elif compression == 'bd':
-        compression_matrix = bd_matrix(M_tilde / J, M_tilde, patch_size ** 2)
-        compressed_dictionary = comp_phi = compression_matrix @ dictionary
+        compression_matrix = bd_matrix((2 * M_tilde) / J, M_tilde, patch_size ** 2)
+        compressed_dictionary = compression_matrix @ dictionary
 
     # Initialize empty arrays for tracking learning data
     dictionary_saved = np.zeros((num_epochs, *dictionary.shape))
@@ -137,7 +137,6 @@ if __name__ == "__main__":
 
             # Normalize dictionaries. Required to prevent unbounded growth, Tikhonov regularisation also possible.
             infer_dictionary /= np.sqrt(np.sum(infer_dictionary ** 2, axis=0))
-
             # Calculate loss after gradient step
             epoch_loss[i] = np.sum((infer_patches - infer_dictionary @ b) ** 2) + tau * np.sum(np.abs(b))
 
@@ -148,7 +147,7 @@ if __name__ == "__main__":
                 # Load next batch of correlation patches
                 patches = corr_patches[i * batch_size:(i + 1) * batch_size].reshape(batch_size, -1).T
                 # Compress patches
-                compressed_patches = compressed_dictionary @ patches
+                compressed_patches = compression_matrix @ patches
 
                 # Infer coefficients
                 if solver == "FISTA":
