@@ -25,9 +25,9 @@ parser.add_argument('-N', '--dict_count', default=256, type=int, help="Dictionar
 parser.add_argument('-p', '--patch_size', default=16, type=int, help="Patch size")
 parser.add_argument('-R', '--l1_penalty', default=1e-1, type=float, help="L1 regularizer constant")
 parser.add_argument('-e', '--num_epochs', default=100, type=int, help="Number of epochs")
-parser.add_argument('-T', '--train_samples', default=48000, type=int, help="Number of training samples to use")
-parser.add_argument('-V', '--val_samples', default=12000, type=int, help="Number of validation samples to use")
-parser.add_argument('-C', '--corr_samples', default=6000, type=int,
+parser.add_argument('-T', '--train_samples', default=60000, type=int, help="Number of training samples to use")
+parser.add_argument('-V', '--val_samples', default=15000, type=int, help="Number of validation samples to use")
+parser.add_argument('-C', '--corr_samples', default=8000, type=int,
                     help="Number of correlation samples to use to recover dictionaries")
 parser.add_argument('-c', '--compression', required=True, choices=['none', 'dbd', 'bd'],
                     help="Type of compression to use. None for regular sparse dictionary, dbd for distinct block "
@@ -36,7 +36,7 @@ parser.add_argument('-j', '--localization', required=True, type=int,
                     help="Degree of localization for compression. J=1 has no localization.")
 parser.add_argument('-r', '--compression_ratio', default=.5, type=float, help="Ratio of compression")
 parser.add_argument('-l', '--learning_rate', default=.8, type=float, help="Default initial learning rate")
-parser.add_argument('-d', '--decay', default=.985, type=float, help="Default multiplicative learning rate decay")
+parser.add_argument('-d', '--decay', default=.98, type=float, help="Default multiplicative learning rate decay")
 
 # PARSE ARGUMENTS #
 args = parser.parse_args()
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         compression_matrix = dbd_matrix(J, M_tilde, patch_size ** 2)
         compressed_dictionary = compression_matrix @ dictionary
     elif compression == 'bd':
-        compression_matrix = bd_matrix((2 * M_tilde) / J, M_tilde, patch_size ** 2)
+        compression_matrix = bd_matrix(M_tilde // J, M_tilde, patch_size ** 2)
         compressed_dictionary = compression_matrix @ dictionary
 
     # Initialize empty arrays for tracking learning data

@@ -7,6 +7,7 @@ Implementation of different sparse matrices used for compressed dictionary learn
 """
 import numpy as np
 import scipy
+from PIL import Image
 
 
 def dbd_matrix(num_blocks, M, N):
@@ -33,10 +34,10 @@ def bd_matrix(bands, M, N):
     :return: Numpy array containing M by N sparse BD matrix
     """
     comp_block_diag = np.random.randn(M, N) * (1 / np.sqrt(M))
-    diag_band = np.zeros_like(comp_block_diag)
-    for j in range(- int(bands / 2), int(bands + 1 / 2)):
-        for i in range(M):
-            if i + j >= N:
-                continue
-            diag_band[i, i + j] = 1
+    diag_square = np.zeros((M, M))
+    for i in range(M):
+        for j in range(-bands // 2, bands // 2):
+            diag_square[i, (i + j) % M] = 1
+    diag_image = Image.fromarray(diag_square)
+    diag_band = np.array(diag_image.resize((M, N), resample=Image.NEAREST))
     return diag_band * comp_block_diag
