@@ -35,8 +35,8 @@ parser.add_argument('-c', '--compression', required=True, choices=['none', 'dbd'
 parser.add_argument('-j', '--localization', required=True, type=int,
                     help="Degree of localization for compression. J=1 has no localization.")
 parser.add_argument('-r', '--compression_ratio', default=.5, type=float, help="Ratio of compression")
-parser.add_argument('-l', '--learning_rate', default=.8, type=float, help="Default initial learning rate")
-parser.add_argument('-d', '--decay', default=.98, type=float, help="Default multiplicative learning rate decay")
+parser.add_argument('-l', '--learning_rate', default=1.5, type=float, help="Default initial learning rate")
+parser.add_argument('-d', '--decay', default=.95, type=float, help="Default multiplicative learning rate decay")
 
 # PARSE ARGUMENTS #
 args = parser.parse_args()

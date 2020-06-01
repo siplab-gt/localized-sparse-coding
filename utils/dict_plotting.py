@@ -44,7 +44,7 @@ def show_phi_vid(phi_list):
         phi_im = []
         title = plt.text(0.5, .90, "Epoch Number {}".format(i),
                          size=plt.rcParams["axes.titlesize"],
-                         ha="center", transform=fig.transFigure, )
+                         ha="center", transform=fig.transFigure, fontsize=20)
         phi_im.append(title)
         for p in range(num_dictionaries):
             dict_element = phi_list[i, :, p].reshape(patch_size, patch_size)

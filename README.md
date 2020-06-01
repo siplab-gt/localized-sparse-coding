@@ -35,12 +35,12 @@ To use Matlab engine, Python 3.6 or 3.7 required with Matlab. [See this StackOve
 <img align="middle" src="./results/uncompressed.gif" alt="Uncompressed" width="512" height="512" />
 </p>
 
-#### Distinct Block Diagonal Matrix
+#### Distinct Block Diagonal Matrix, J = 4
 <p align="center">
 <img align="middle" src="./results/block_diagonal.gif" alt="DBD" width="512" height="512" />
 </p>
 
-#### Banded Diagonal Matrix
+#### Banded Diagonal Matrix, J = 4
 <p align="center">
 <img align="middle" src="./results/banded_diagonal.gif" alt="BD" width="512" height="512" />
 </p>

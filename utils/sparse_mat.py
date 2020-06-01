@@ -39,5 +39,5 @@ def bd_matrix(bands, M, N):
         for j in range(-bands // 2, bands // 2):
             diag_square[i, (i + j) % M] = 1
     diag_image = Image.fromarray(diag_square)
-    diag_band = np.array(diag_image.resize((M, N), resample=Image.NEAREST))
+    diag_band = np.array(diag_image.resize((M, N), resample=Image.NEAREST)).T
     return diag_band * comp_block_diag
