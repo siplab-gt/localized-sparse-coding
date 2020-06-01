@@ -38,7 +38,7 @@ To use Matlab engine, Python 3.6 or 3.7 required with Matlab. [See this StackOve
 ### Examples
 
 #### Output
-The training script, `train_sparse_dict.py`, outputs a dictionary containing Numpy arrays in a specific format. To use it, first load a training file. An example on how to load the file would be:
+The training script, `train_sparse_dict.py`, outputs a dictionary containing Numpy arrays in a specific format. To use it, first load a training file:
 
 ```python
 data_file = np.load('./results/traindata_05-31-2020_none_J1.npz')
@@ -47,7 +47,7 @@ data_file = np.load('./results/traindata_05-31-2020_none_J1.npz')
 With any training file loaded, access the dictionary using the following format:
 
 
-| Dictionary key          | Signified                                                                                                                                                                                                                         |
+| Dictionary key          | Value                                                                                                                                                                                                                         |
 |-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | data_file['phi']        | A Numpy tensor containing the dictionary at each epoch in training. Dimensions [num_epochs x patch_size**2 x dict_count]                                                                                                          |
 | data_file['time']       | The training time, in seconds, at each epoch Dimensions [num_epochs x float]                                                                                                                                                      |

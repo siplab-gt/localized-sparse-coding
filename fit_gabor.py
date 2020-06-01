@@ -55,6 +55,7 @@ if __name__ == "__main__":
         dictionary = dictionary.reshape(patch_size, patch_size, -1)
 
         # Loop through each atom in dictionary and find best wavelet fit
+        wavelet = []
         a = []
         b = []
         x0 = []
@@ -68,24 +69,25 @@ if __name__ == "__main__":
         for i in range(dictionary.shape[-1]):
             # try:
             atom_matlab = matlab.double(dictionary[:, :, i].tolist())
-            wavelet_fit = eng.fit2dGabor(atom_matlab, options, stdout=io.StringIO())['fit']
+            wavelet_fit = eng.fit2dGabor(atom_matlab, options, stdout=io.StringIO())
             # TODO: Improve code quality
-            a.append(wavelet_fit['a'])
-            b.append(wavelet_fit['b'])
-            x0.append(wavelet_fit['x0'])
-            y0.append(wavelet_fit['y0'])
-            sigmax.append(wavelet_fit['sigmax'])
-            sigmay.append(wavelet_fit['sigmay'])
-            theta.append(wavelet_fit['theta'])
-            phi.append(wavelet_fit['phi'])
-            Lambda.append(wavelet_fit['lambda'])
-            phase.append(wavelet_fit['phase'])
+            wavelet.append(np.array(wavelet_fit['patch']))
+            a.append(wavelet_fit['fit']['a'])
+            b.append(wavelet_fit['fit']['b'])
+            x0.append(wavelet_fit['fit']['x0'])
+            y0.append(wavelet_fit['fit']['y0'])
+            sigmax.append(wavelet_fit['fit']['sigmax'])
+            sigmay.append(wavelet_fit['fit']['sigmay'])
+            theta.append(wavelet_fit['fit']['theta'])
+            phi.append(wavelet_fit['fit']['phi'])
+            Lambda.append(wavelet_fit['fit']['lambda'])
+            phase.append(wavelet_fit['fit']['phase'])
             print("SUCCESS to fit wavelet to dictionary element {} of {}".format(i + 1, dictionary.shape[-1]))
             # except:
             #     print("FAILED to fit wavelet to dictionary element {} of {}".format(i + 1, dictionary.shape[-1]))
             #     continue
 
-        np.savez_compressed(save_path, a=np.array(a), b=np.array(b), x0=np.array(x0), y0=np.array(y0),
-                            sigmax=np.array(sigmax), sigmay=np.array(sigmay), theta=np.array(theta),
+        np.savez_compressed(save_path, wavelet=np.array(wavelet), a=np.array(a), b=np.array(b), x0=np.array(x0),
+                            y0=np.array(y0), sigmax=np.array(sigmax), sigmay=np.array(sigmay), theta=np.array(theta),
                             phi=np.array(phi), Lambda=np.array(Lambda), phase=np.array(phase))
         print("... Saved in {}".format(save_path))

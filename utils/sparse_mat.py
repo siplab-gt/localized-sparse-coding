@@ -7,6 +7,7 @@ Implementation of different sparse matrices used for compressed dictionary learn
 """
 import numpy as np
 import scipy
+import scipy.linalg
 from PIL import Image
 
 
@@ -25,18 +26,21 @@ def dbd_matrix(num_blocks, M, N):
     return dbd_mat
 
 
-def bd_matrix(bands, M, N):
+def bd_matrix(bands, M, N, wrap=False):
     """
     Returns a sparse banded diagonal (BD) matrix with zero-mean Gaussian entries with variance 1/M
     :param bands: Number of bands from the diagonal to have non-zero
     :param M: Rows in resulting matrix
     :param N: Columns in resulting matrix
+    :param wrap: Whether the banded-diagonal allows for wrapping
     :return: Numpy array containing M by N sparse BD matrix
     """
     comp_block_diag = np.random.randn(M, N) * (1 / np.sqrt(M))
     diag_square = np.zeros((M, M))
     for i in range(M):
         for j in range(-bands // 2, bands // 2):
+            if not wrap and (i + j < 0 or i + j >= M):
+                continue
             diag_square[i, (i + j) % M] = 1
     diag_image = Image.fromarray(diag_square)
     diag_band = np.array(diag_image.resize((M, N), resample=Image.NEAREST)).T
