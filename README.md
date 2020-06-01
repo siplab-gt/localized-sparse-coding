@@ -1,5 +1,11 @@
 # Compressed Sparse Dictionary
 
+Uncompressed             |  Distinct Block Diagonal         | Banded Diagonal
+:-------------------------:|:-------------------------:|:-------------------:
+<img src="./results/figures/all_64_32.jpg" alt="uncompressed" width="200"/>  |  <img src="./results/figures/block_64_32.jpg" alt="dbd" width="200"/>  | <img src="./results/figures/band_64_32.jpg" alt="bd" width="200"/>  |
+
+
+
 ### Background
 
 < Have Chris give a brief background on the project>
@@ -49,15 +55,15 @@ With any training file loaded, access the dictionary using the following format:
 
 #### Uncompressed
 <p align="center">
-<img align="middle" src="./results/uncompressed.gif" alt="Uncompressed" width="512" height="512" />
+<img align="middle" src="results/figures/uncompressed.gif" alt="Uncompressed" width="512" height="512" />
 </p>
 
 #### Distinct Block Diagonal Matrix, J = 4
 <p align="center">
-<img align="middle" src="./results/block_diagonal.gif" alt="DBD" width="512" height="512" />
+<img align="middle" src="results/figures/block_diagonal.gif" alt="DBD" width="512" height="512" />
 </p>
 
 #### Banded Diagonal Matrix, J = 4
 <p align="center">
-<img align="middle" src="./results/banded_diagonal.gif" alt="BD" width="512" height="512" />
+<img align="middle" src="results/figures/banded_diagonal.gif" alt="BD" width="512" height="512" />
 </p>
