@@ -30,6 +30,23 @@ To use Matlab engine, Python 3.6 or 3.7 required with Matlab. [See this StackOve
 
 ### Examples
 
+#### Output
+The training script, `train_sparse_dict.py`, outputs a dictionary containing Numpy arrays in a specific format. To use it, first load a training file. An example on how to load the file would be:
+
+```python
+data_file = np.load('./results/traindata_05-31-2020_none_J1.npz')
+```
+
+With any training file loaded, access the dictionary using the following format:
+
+
+| Dictionary key          | Signified                                                                                                                                                                                                                         |
+|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| data_file['phi']        | A Numpy tensor containing the dictionary at each epoch in training. Dimensions [num_epochs x patch_size**2 x dict_count]                                                                                                          |
+| data_file['time']       | The training time, in seconds, at each epoch Dimensions [num_epochs x float]                                                                                                                                                      |
+| data_file['train_loss'] | Training loss at each epoch. Performed on uncompressed or compressed dictionaries learned on the main data-set.   Loss is MSE reconstructing training patches. Dimensions [num_epochs x float].                                   |
+| data_file['val_loss']   | Validation loss at each epoch. Performed on uncompressed or reconstructed dictionaries on hold-out data-set,   taken from seperate images. Loss is MSE between reconstructed validation patches. Dimensions [num_epochs x float]. |
+
 #### Uncompressed
 <p align="center">
 <img align="middle" src="./results/uncompressed.gif" alt="Uncompressed" width="512" height="512" />
