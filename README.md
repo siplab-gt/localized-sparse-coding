@@ -2,7 +2,7 @@
 
 Uncompressed             |  Distinct Block Diagonal         | Banded Diagonal
 :-------------------------:|:-------------------------:|:-------------------:
-<img src="./results/figures/all_64_32.jpg" alt="uncompressed" width="200"/>  |  <img src="./results/figures/block_64_32.jpg" alt="dbd" width="200"/>  | <img src="./results/figures/band_64_32.jpg" alt="bd" width="200"/>  |
+![](./results/figures/all_64_32.jpg)|  ![](./results/figures/block_64_32.jpg)  | ![](./results/figures/band_64_32.jpg)  |
 
 
 
