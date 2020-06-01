@@ -138,7 +138,7 @@ if __name__ == "__main__":
             # Normalize dictionaries. Required to prevent unbounded growth, Tikhonov regularisation also possible.
             infer_dictionary /= np.sqrt(np.sum(infer_dictionary ** 2, axis=0))
             # Calculate loss after gradient step
-            epoch_loss[i] = np.sum((infer_patches - infer_dictionary @ b) ** 2) + tau * np.sum(np.abs(b))
+            epoch_loss[i] = 0.5 * np.sum((infer_patches - infer_dictionary @ b) ** 2) + tau * np.sum(np.abs(b))
 
         if compression != 'none':
             C_sr = []
@@ -183,7 +183,7 @@ if __name__ == "__main__":
                 b_hat = ADMM(infer_dictionary, patches, tau=tau)
 
             # Compute and save loss
-            epoch_val_loss[i] = np.sum((patches - infer_dictionary @ b_hat) ** 2) + tau * np.sum(np.abs(b_hat))
+            epoch_val_loss[i] = 0.5 * np.sum((patches - infer_dictionary @ b_hat) ** 2) + tau * np.sum(np.abs(b_hat))
 
         # Decay step-size
         step_size = step_size * decay
