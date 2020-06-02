@@ -14,7 +14,7 @@ import scipy.io
 from sklearn.feature_extraction.image import extract_patches_2d
 
 from utils.solvers import FISTA, ADMM
-from utils.sparse_mat import bd_matrix, dbd_matrix
+from utils.sparse_mat import dbd_matrix, brm_matrix
 
 # PARSE COMMAND LINE ARGUMENTS #
 parser = argparse.ArgumentParser(description='Run sparse dictionary learning with compressed images.')
@@ -29,9 +29,9 @@ parser.add_argument('-T', '--train_samples', default=60000, type=int, help="Numb
 parser.add_argument('-V', '--val_samples', default=15000, type=int, help="Number of validation samples to use")
 parser.add_argument('-C', '--corr_samples', default=8000, type=int,
                     help="Number of correlation samples to use to recover dictionaries")
-parser.add_argument('-c', '--compression', required=True, choices=['none', 'dbd', 'bd'],
+parser.add_argument('-c', '--compression', required=True, choices=['none', 'dbd', 'brm'],
                     help="Type of compression to use. None for regular sparse dictionary, dbd for distinct block "
-                         "diagonal, bd for banded diagonal.")
+                         "diagonal, brm for banded diagonal.")
 parser.add_argument('-j', '--localization', required=True, type=int,
                     help="Degree of localization for compression. J=1 has no localization.")
 parser.add_argument('-r', '--compression_ratio', default=.5, type=float, help="Ratio of compression")
@@ -96,8 +96,8 @@ if __name__ == "__main__":
     if compression == 'dbd':
         compression_matrix = dbd_matrix(J, M_tilde, patch_size ** 2)
         compressed_dictionary = compression_matrix @ dictionary
-    elif compression == 'bd':
-        compression_matrix = bd_matrix(M_tilde // J, M_tilde, patch_size ** 2)
+    elif compression == 'brm':
+        compression_matrix = brm_matrix(M_tilde // J, M_tilde, patch_size ** 2)
         compressed_dictionary = compression_matrix @ dictionary
 
     # Initialize empty arrays for tracking learning data
@@ -121,7 +121,10 @@ if __name__ == "__main__":
                 infer_patches = patches
             else:
                 infer_dictionary = compressed_dictionary
+                # Compress patches and then normalize
                 infer_patches = compression_matrix @ patches
+                # TODO: Determine if this breaks statistical guarantees for convergence
+                infer_patches /= np.linalg.norm(infer_patches, axis=0)
 
             # Infer coefficients
             if solver == "FISTA":

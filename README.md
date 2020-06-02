@@ -15,7 +15,7 @@
 #### Training
 In order to train a compressed sparse dictionary, use the `train_sparse_dict.py` script. There are several optional parameters, but the ones that you might be interested in are:
  
-* `--compression` or `-c`, which determines the compression matrix. Options are `none` for no compression, `dbd` for distinct block diagonal, and `bd` for banded diagonal.
+* `--compression` or `-c`, which determines the compression matrix. Options are `none` for no compression, `dbd` for distinct block diagonal, and `brm` for banded random matrix.
 * `--localization` or `-j`, which determines the degree of localization
 
 Example usage:
@@ -64,7 +64,7 @@ With any training file loaded, access the dictionary using the following format:
 <img align="middle" src="results/figures/block_diagonal.gif" alt="DBD" width="512" height="512" />
 </p>
 
-#### Banded Diagonal Matrix, J = 4
+#### Banded Random Matrix, J = 4
 <p align="center">
 <img align="middle" src="results/figures/banded_diagonal.gif" alt="BD" width="512" height="512" />
 </p>

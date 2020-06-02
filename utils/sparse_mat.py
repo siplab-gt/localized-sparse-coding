@@ -26,14 +26,14 @@ def dbd_matrix(num_blocks, M, N):
     return dbd_mat
 
 
-def bd_matrix(bands, M, N, wrap=False):
+def brm_matrix(bands, M, N, wrap=False):
     """
-    Returns a sparse banded diagonal (BD) matrix with zero-mean Gaussian entries with variance 1/M
+    Returns a banded random matrix (BRM) with zero-mean Gaussian entries with variance 1/M
     :param bands: Number of bands from the diagonal to have non-zero
     :param M: Rows in resulting matrix
     :param N: Columns in resulting matrix
     :param wrap: Whether the banded-diagonal allows for wrapping
-    :return: Numpy array containing M by N sparse BD matrix
+    :return: Numpy array containing M by N sparse BRM matrix
     """
     comp_block_diag = np.random.randn(M, N) * (1 / np.sqrt(M))
     diag_square = np.zeros((M, M))
