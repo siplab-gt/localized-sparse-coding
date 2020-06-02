@@ -164,6 +164,7 @@ if __name__ == "__main__":
             C_rr = np.mean(np.array(C_rr), axis=0) / batch_size
             # Reconstruct dictionaries
             dictionary_rm = C_sr @ np.linalg.pinv(C_rr)
+            dictionary_rm /= np.sqrt(np.sum(dictionary_rm ** 2, axis=0))
 
         # Test reconstructed or uncompressed dictionary on validation data-set
         epoch_val_loss = np.zeros(val_patches.shape[0] // batch_size)
