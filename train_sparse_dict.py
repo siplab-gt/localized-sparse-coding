@@ -129,7 +129,6 @@ if __name__ == "__main__":
                 infer_dictionary = compressed_dictionary
                 # Compress patches and then normalize
                 infer_patches = compression_matrix @ patches
-                # TODO: Determine if this breaks statistical guarantees for convergence
                 infer_patches /= np.linalg.norm(infer_patches, axis=0)
 
             # Infer coefficients
