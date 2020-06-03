@@ -11,14 +11,14 @@ import scipy.linalg
 from PIL import Image
 
 
-def hilbert_curve(num_blocks, patch_size):
+def hilbert_curve(patch_size):
     """
     Returns a hilbert curve which can be used to ensure that a vectorized image patch maintains spatial locality.
     https://blogs.mathworks.com/steve/2012/01/25/generating-hilbert-curves/
     :param num_blocks: Number of blocks used dto
     :param patch_size:
     """
-    order = int(np.log(patch_size ** 2) / np.log(num_blocks))
+    order = int(np.log(patch_size ** 2) / np.log(4))
     a = 1 + 1j
     b = 1 - 1j
     z = np.expand_dims(np.array([0]), -1)

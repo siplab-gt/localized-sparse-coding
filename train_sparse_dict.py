@@ -89,10 +89,7 @@ if __name__ == "__main__":
 
     # Generate Hilbert Curve to arrange vectorized image patches to obey spatial locality (i.e. pixels close in image
     # stay close to one another)
-    if J > 1:
-        index_ordering = hilbert_curve(J, patch_size)
-    else:
-        index_ordering = np.arange(patch_size ** 2)
+    index_ordering = hilbert_curve(patch_size)
 
     # INITIALIZE TRAINING PARAMETERS #
     dictionary = np.random.randn(patch_size ** 2, num_dictionaries)
@@ -187,7 +184,7 @@ if __name__ == "__main__":
             patches = val_patches[i * batch_size:(i + 1) * batch_size].reshape(batch_size, -1).T
             # Re-order vectorized patches to obey spatial locality
             patches = np.squeeze(patches[index_ordering, :])
-            
+
             if compression == 'none':
                 infer_dictionary = dictionary
             else:
