@@ -14,7 +14,7 @@ import scipy.io
 from sklearn.feature_extraction.image import extract_patches_2d
 
 from utils.solvers import FISTA, ADMM
-from utils.sparse_mat import dbd_matrix, brm_matrix
+from utils.sparse_mat import dbd_matrix, brm_matrix, hilbert_curve
 
 # PARSE COMMAND LINE ARGUMENTS #
 parser = argparse.ArgumentParser(description='Run sparse dictionary learning with compressed images.')
@@ -87,6 +87,13 @@ if __name__ == "__main__":
         corr_patches = corr_patches / np.linalg.norm(corr_patches.reshape(-1, patch_size ** 2), axis=1)[:, None, None]
         print("Shape of correlation dataset: {}".format(corr_patches.shape))
 
+    # Generate Hilbert Curve to arrange vectorized image patches to obey spatial locality (i.e. pixels close in image
+    # stay close to one another)
+    if J > 1:
+        index_ordering = hilbert_curve(J, patch_size)
+    else:
+        index_ordering = np.arange(patch_size ** 2)
+
     # INITIALIZE TRAINING PARAMETERS #
     dictionary = np.random.randn(patch_size ** 2, num_dictionaries)
     dictionary /= np.sqrt(np.sum(dictionary ** 2, axis=0))
@@ -114,6 +121,8 @@ if __name__ == "__main__":
         np.random.shuffle(train_patches)
         for i in range(train_patches.shape[0] // batch_size):
             patches = train_patches[i * batch_size:(i + 1) * batch_size].reshape(batch_size, -1).T
+            # Re-order vectorized patches to obey spatial locality
+            patches = np.squeeze(patches[index_ordering, :])
 
             # Create single variable that can be used irrespective of compression matrix.
             if compression == 'none':
@@ -149,6 +158,8 @@ if __name__ == "__main__":
             for i in range(corr_patches.shape[0] // batch_size):
                 # Load next batch of correlation patches
                 patches = corr_patches[i * batch_size:(i + 1) * batch_size].reshape(batch_size, -1).T
+                # Re-order vectorized patches to obey spatial locality
+                patches = np.squeeze(patches[index_ordering, :])
                 # Compress patches
                 compressed_patches = compression_matrix @ patches
 
@@ -174,7 +185,9 @@ if __name__ == "__main__":
         for i in range(val_patches.shape[0] // batch_size):
             # Load next batch of validation patches
             patches = val_patches[i * batch_size:(i + 1) * batch_size].reshape(batch_size, -1).T
-
+            # Re-order vectorized patches to obey spatial locality
+            patches = np.squeeze(patches[index_ordering, :])
+            
             if compression == 'none':
                 infer_dictionary = dictionary
             else:
