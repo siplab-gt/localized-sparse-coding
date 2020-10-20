@@ -8,32 +8,27 @@
 
 
 ### Background
+*Learning sparse codes from compressed representations with biologically plausible local wiring constraints*
 
-< Have Chris give a brief background on the project>
+Code accompanying 2020 NeurIps paper by Kion Fallah<sup>\*</sup>, Adam A. Willats<sup>\*</sup>, Ninghao Liu, and Christopher J. Rozell.
 
+This library provides code to learn a sparse coding model with different coefficient inference strategies (FISTA and ADMM), as well as different compression schemes (dense random, block diagonal matrix, and banded random matrix).
+
+<sub>\* equal contribution </sub>
 ### Usage
 #### Training
 In order to train a compressed sparse dictionary, use the `train_sparse_dict.py` script. There are several optional parameters, but the ones that you might be interested in are:
  
 * `--compression` or `-c`, which determines the compression matrix. Options are `none` for no compression, `dbd` for distinct block diagonal, and `brm` for banded random matrix.
-* `--localization` or `-j`, which determines the degree of localization
+* `--localization` or `-l`, which determines the degree of localization
 
 Example usage:
 ```
-python train_script_dict.py -c dbd -j 4
-```
-#### Analysis
-To analyse pre-trained dictionaries, use data_plotting.ipynb. This is a python notebook that requires Jupyter to interact with.
-
-There is an additional script included to fit Gabor wavelets to all trained dictionaries for further analysis. This script requires Matlab, and is built off a script from [Gerrit Ecke](https://www.mathworks.com/matlabcentral/fileexchange/60700-fit2dgabor-data-options). It can be run with the following command:
-```
-python fit_gabor.py --sweep
+python train_sparse_dict.py -c bdm -l 4
 ```
 
 #### Dependencies
 Python 3.0+, Scikit-Learn, Numpy, Scipy. 
-
-To use Matlab engine, Python 3.6 or 3.7 required with Matlab. [See this StackOverflow post for details](https://stackoverflow.com/questions/46141631/running-matlab-using-python-gives-no-module-named-matlab-engine-error). 
 
 ### Examples
 
@@ -59,12 +54,12 @@ With any training file loaded, access the dictionary using the following format:
 <img align="middle" src="results/figures/uncompressed.gif" alt="Uncompressed" width="512" height="512" />
 </p>
 
-#### Distinct Block Diagonal Matrix, J = 4
+#### Distinct Block Diagonal Matrix, L = 1/4
 <p align="center">
 <img align="middle" src="results/figures/block_diagonal.gif" alt="DBD" width="512" height="512" />
 </p>
 
-#### Banded Random Matrix, J = 4
+#### Banded Random Matrix, L = 1/4
 <p align="center">
 <img align="middle" src="results/figures/banded_diagonal.gif" alt="BD" width="512" height="512" />
 </p>
