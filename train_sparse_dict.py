@@ -29,13 +29,13 @@ parser.add_argument('-T', '--train_samples', default=60000, type=int, help="Numb
 parser.add_argument('-V', '--val_samples', default=15000, type=int, help="Number of validation samples to use")
 parser.add_argument('-C', '--corr_samples', default=8000, type=int,
                     help="Number of correlation samples to use to recover dictionaries")
-parser.add_argument('-c', '--compression', required=True, choices=['none', 'dbd', 'brm'],
+parser.add_argument('-c', '--compression', required=True, choices=['none', 'bdm', 'brm'],
                     help="Type of compression to use. None for regular sparse dictionary, dbd for distinct block "
                          "diagonal, brm for banded diagonal.")
-parser.add_argument('-j', '--localization', required=True, type=int,
+parser.add_argument('-l', '--localization', required=True, type=int,
                     help="Degree of localization for compression. J=1 has no localization.")
 parser.add_argument('-r', '--compression_ratio', default=.5, type=float, help="Ratio of compression")
-parser.add_argument('-l', '--learning_rate', default=0.8, type=float, help="Default initial learning rate")
+parser.add_argument('-L', '--learning_rate', default=0.8, type=float, help="Default initial learning rate")
 parser.add_argument('-d', '--decay', default=.975, type=float, help="Default multiplicative learning rate decay")
 
 # PARSE ARGUMENTS #
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     step_size = learning_rate
 
     # Create compression matrices and compress the dictionary
-    if compression == 'dbd':
+    if compression == 'bdm':
         compression_matrix = dbd_matrix(J, M_tilde, patch_size ** 2)
         compressed_dictionary = compression_matrix @ dictionary
     elif compression == 'brm':
@@ -148,6 +148,7 @@ if __name__ == "__main__":
             # Calculate loss after gradient step
             epoch_loss[i] = 0.5 * np.sum((infer_patches - infer_dictionary @ b) ** 2) + tau * np.sum(np.abs(b))
 
+        # If we applied compression, make a linear estimation of the dictionaries with hold-out patches.
         if compression != 'none':
             C_sr = []
             C_rr = []
