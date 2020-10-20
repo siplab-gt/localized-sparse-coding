@@ -12,14 +12,14 @@
 
 Code accompanying 2020 NeurIps paper by Kion Fallah<sup>\*</sup>, Adam A. Willats<sup>\*</sup>, Ninghao Liu, and Christopher J. Rozell.
 
-This library provides code to learn a sparse coding model with different coefficient inference strategies (FISTA and ADMM), as well as different compression schemes (dense random, block diagonal matrix, and banded random matrix).
+This library provides code to learn a sparse coding model with different coefficient inference strategies (FISTA and ADMM), as well as different compression schemes (dense random matrix, block diagonal matrix, and banded random matrix).
 
 <sub>\* equal contribution </sub>
 ### Usage
 #### Training
 In order to train a compressed sparse dictionary, use the `train_sparse_dict.py` script. There are several optional parameters, but the ones that you might be interested in are:
  
-* `--compression` or `-c`, which determines the compression matrix. Options are `none` for no compression, `dbd` for distinct block diagonal, and `brm` for banded random matrix.
+* `--compression` or `-c`, which determines the compression matrix. Options are `none` for no compression, `bdm` for banded diagonal matrix, and `brm` for banded random matrix. For a dense random, use `bdm` with a localization of 1, `-l 1`.
 * `--localization` or `-l`, which determines the degree of localization
 
 Example usage:
