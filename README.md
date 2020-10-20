@@ -30,6 +30,8 @@ python train_sparse_dict.py -c bdm -l 4
 #### Dependencies
 Python 3.0+, Scikit-Learn, Numpy, Scipy. 
 
+Whitened natural images retrieved from `http://www.rctn.org/bruno/sparsenet/`.
+
 ### Examples
 
 #### Output
