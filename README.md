@@ -1,4 +1,4 @@
-# Compressed Sparse Dictionary
+# Localized Sparse Coding
 
 <p align="center">
 <img align="middle" src="results/figures/all_64_32.png" alt="U" width="250"/>
